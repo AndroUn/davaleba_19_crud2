@@ -1,11 +1,11 @@
 import useFetch from '../hooks/useFetch';
 import TodoTask from '../component/TodoTask';
 import useRequest from '../hooks/useRequest';
-import { useParams } from 'react-router-dom';
 
 const MainPage = () => {
     const {response, error, loading, resendRequest} = useFetch({url:'/api/v1/taskList', method: 'GET' })
     const [sendFirstRequest] = useRequest({method: 'DELETE'})
+    const [sendSecondRequest] = useRequest({method: 'PUT'})
     const taskList = response?.items.map(tasks => {
         return {
           title: tasks.title,
@@ -21,8 +21,10 @@ const MainPage = () => {
       sendFirstRequest(null, `/api/v1/taskList/${taskId}`).then(() => resendRequest())
     }
 
-  
-    
+    const onFinish = (isCompleted, taskId) => {
+      sendSecondRequest({isCompleted : !isCompleted}, `/api/v1/taskList/${taskId}`).then(() => resendRequest())
+    }
+
 
     if(loading) return <div className="lds-dual-ring"></div>
     if(error) return <p>{error}</p>
